@@ -27,6 +27,8 @@ public class MainActivity extends Activity {
 
         TextView txtFileName = (TextView) findViewById(R.id.fileName);
         TextView apkFileName = (TextView) findViewById(R.id.apkName);
+        TextView absPathName = (TextView) findViewById(R.id.absPath);
+        TextView canPathName = (TextView) findViewById(R.id.canonPath);
 
         AssetManager assetManager = getAssets();
         try {
@@ -40,9 +42,10 @@ public class MainActivity extends Activity {
 
             OutputStream out = null;
             InputStream in = getAssets().open("preinstalledapp/app-debug.apk");
-            //File outFile = new File(getExternalFilesDir(null), "myapk.apk");
-            //File outFile = new File(getExternalStorageDirectory(), "myapk.apk");
-            out = new FileOutputStream("/sdcard/myapk.apk");
+            File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
+            absPathName.setText(outFile.getAbsolutePath());
+            canPathName.setText(outFile.getCanonicalPath());
+            out = new FileOutputStream(outFile);
 
             byte[] buffer = new byte[1024];
 
@@ -63,8 +66,7 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(Intent.ACTION_VIEW);
 
 
-            intent.setDataAndType(Uri.fromFile(new File("/sdcard/myapk.apk")),
-                    "application/vnd.android.package-archive");
+            intent.setDataAndType(Uri.fromFile(outFile), "application/vnd.android.package-archive");
             startActivity(intent);
 
         } catch (IOException e) {

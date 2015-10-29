@@ -35,4 +35,30 @@
         android:layout_below="@+id/apkTitle"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FilePath"
+        android:id="@+id/abs"
+        android:layout_below="@+id/apkName"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="=="
+        android:id="@+id/absPath"
+        android:layout_below="@+id/abs"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="==="
+        android:id="@+id/canonPath"
+        android:layout_below="@+id/absPath"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
