@@ -78,23 +78,37 @@ public class MainActivity extends Activity {
     }
 
     protected void deleteThread() {
+        final boolean waitSignal = true;
 
         Thread t = new Thread() {
             public void run() {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (waitSignal) {
+                    try {
+                        Thread.sleep(9000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
+                final File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
                 outFile.delete();
 
                 Handler mainHandler = new Handler(getMainLooper());
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        TextView absPathName = (TextView) findViewById(R.id.absPath);
                         TextView canPathName = (TextView) findViewById(R.id.canonPath);
-                        canPathName.setText("deleted");
+                        if(outFile.exists()) {
+                            absPathName.setText("\ndeleted " + "but still exist");
+                        }else {
+                            absPathName.setText("\ndeleted " + "doesn't exist");
+                        }
+                        if(outFile.canRead()){
+                            canPathName.setText("\ndeleted " + "but can be read");
+                        }else {
+                            canPathName.setText("\ndeleted " + "cannot read");
+
+                        }
 
                     }
                 };
@@ -122,7 +136,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void run() {
                         TextView canPathName = (TextView) findViewById(R.id.canonPath);
-                        canPathName.setText("installed");
+                        canPathName.setText("\ninstalled");
 
                     }
                 };
