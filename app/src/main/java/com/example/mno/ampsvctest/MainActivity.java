@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -14,8 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends Activity {
 
@@ -43,9 +43,9 @@ public class MainActivity extends Activity {
             OutputStream out = null;
             InputStream in = getAssets().open("preinstalledapp/app-debug.apk");
             File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
-            absPathName.setText(outFile.getAbsolutePath());
-            canPathName.setText(outFile.getCanonicalPath());
             out = new FileOutputStream(outFile);
+            absPathName.setText(outFile.getAbsolutePath());
+
 
             byte[] buffer = new byte[1024];
 
@@ -63,17 +63,78 @@ public class MainActivity extends Activity {
             out.close();
             out = null;
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
 
 
-            intent.setDataAndType(Uri.fromFile(outFile), "application/vnd.android.package-archive");
-            startActivity(intent);
+            canPathName.setText(outFile.getCanonicalPath());
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        deleteThread();
+        installThread();
+
     }
+
+    protected void deleteThread() {
+
+        Thread t = new Thread() {
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
+                outFile.delete();
+
+                Handler mainHandler = new Handler(getMainLooper());
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView canPathName = (TextView) findViewById(R.id.canonPath);
+                        canPathName.setText("deleted");
+
+                    }
+                };
+                mainHandler.post(myRunnable);
+
+                Log.d("ampsvcTest", "A thread for removing the 2nd apk");
+            }
+        };
+
+        t.start();
+    }
+
+    protected void installThread() {
+
+        Thread t = new Thread() {
+            public void run() {
+                File outFile = new File(getExternalFilesDir("preinstalledapp"), "myapk.apk");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(outFile), "application/vnd.android.package-archive");
+                startActivity(intent);
+
+
+                Handler mainHandler = new Handler(getMainLooper());
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView canPathName = (TextView) findViewById(R.id.canonPath);
+                        canPathName.setText("installed");
+
+                    }
+                };
+                mainHandler.post(myRunnable);
+
+                Log.d("ampsvcTest", "A thread for removing the 2nd apk");
+            }
+        };
+
+        t.start();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
